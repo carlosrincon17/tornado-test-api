@@ -3,6 +3,7 @@ import httplib
 
 import tornado.ioloop
 import tornado.web
+import json
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -25,9 +26,9 @@ class LoanHandler(tornado.web.RequestHandler):
 
     def post(self):
         try:
-            data = self.request.arguments
+            data = json.loads(self.request.body)
             if 'amount' in data:
-                amount = float(data['amount'][0])
+                amount = float(data['amount'])
                 message = self.__validate_amount_loan(amount)
                 status = httplib.OK
             else:
@@ -39,6 +40,7 @@ class LoanHandler(tornado.web.RequestHandler):
             self.write(response)
 
         except Exception as e:
+            print e.message
             self.set_status(httplib.INTERNAL_SERVER_ERROR)
             message = {'message': e.message}
             self.write(message)
@@ -48,7 +50,7 @@ def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/loan", LoanHandler),
-    ], debug=True)
+    ], debug=True, autoreload=False)
 
 
 if __name__ == "__main__":
