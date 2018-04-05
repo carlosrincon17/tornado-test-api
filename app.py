@@ -1,4 +1,6 @@
 import os
+import httplib
+
 import tornado.ioloop
 import tornado.web
 
@@ -19,7 +21,7 @@ class LoanHandler(tornado.web.RequestHandler):
     def __validate_amount_loan(self, amount):
         if self.AMOUNT_TO_LOAN == amount:
             return self.UNDECIDED
-        return self.DECLINED if amount > 50000 else self.APPROVED
+        return self.DECLINED if amount > self.AMOUNT_TO_LOAN else self.APPROVED
 
     def post(self):
         try:
@@ -27,17 +29,17 @@ class LoanHandler(tornado.web.RequestHandler):
             if 'amount' in data:
                 amount = float(data['amount'][0])
                 message = self.__validate_amount_loan(amount)
-                status = 200
+                status = httplib.OK
             else:
                 message = 'Amount is required.'
-                status = 400
+                status = httplib.BAD_REQUEST
 
             response = {'message': message}
             self.set_status(status)
             self.write(response)
 
         except Exception as e:
-            self.set_status(500)
+            self.set_status(httplib.INTERNAL_SERVER_ERROR)
             message = {'message': e.message}
             self.write(message)
 
