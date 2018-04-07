@@ -1,8 +1,9 @@
 import os
-import httplib
+from http import HTTPStatus
 
 import tornado.ioloop
 import tornado.web
+import tornado.escape
 import json
 
 
@@ -31,26 +32,26 @@ class LoanHandler(tornado.web.RequestHandler):
 
     def post(self):
         try:
-            data = json.loads(self.request.body)
+            data = tornado.escape.json_decode(self.request.body)
             if 'amount' in data:
                 amount = float(data['amount'])
                 message = self.__validate_amount_loan(amount)
-                status = httplib.OK
+                status = HTTPStatus.OK
             else:
                 message = 'Amount is required.'
-                status = httplib.BAD_REQUEST
+                status = HTTPStatus.BAD_REQUEST
 
             response = {'message': message}
             self.set_status(status)
             self.write(response)
 
         except Exception as e:
-            self.set_status(httplib.INTERNAL_SERVER_ERROR)
+            self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
             message = {'message': e.message}
             self.write(message)
  
     def options(self):
-        self.set_status(httplib.OK)
+        self.set_status(HTTPStatus.OK)
 
 
 def make_app():
