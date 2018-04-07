@@ -4,7 +4,6 @@ from http import HTTPStatus
 import tornado.ioloop
 import tornado.web
 import tornado.escape
-import json
 
 
 class MainHandler(tornado.web.RequestHandler):

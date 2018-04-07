@@ -5,6 +5,7 @@ import json
 from http import HTTPStatus
 import tornado.escape
 
+
 class TestTornadoTestApp(AsyncHTTPTestCase):
 
     def get_app(self):
