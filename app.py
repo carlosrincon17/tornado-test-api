@@ -19,6 +19,11 @@ class LoanHandler(tornado.web.RequestHandler):
 
     AMOUNT_TO_LOAN = 50000
 
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with, Content-Type")
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+
     def __validate_amount_loan(self, amount):
         if self.AMOUNT_TO_LOAN == amount:
             return self.UNDECIDED
@@ -40,10 +45,12 @@ class LoanHandler(tornado.web.RequestHandler):
             self.write(response)
 
         except Exception as e:
-            print e.message
             self.set_status(httplib.INTERNAL_SERVER_ERROR)
             message = {'message': e.message}
             self.write(message)
+ 
+    def options(self):
+        self.set_status(httplib.OK)
 
 
 def make_app():
